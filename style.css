@@ -99,7 +99,7 @@ form button:hover{
 }
 
 .animate {
-    transform: translateY(8rem) rotateZ(20deg);
+    transform: translateY(1rem);
     opacity: 0;
 }
 
@@ -142,4 +142,19 @@ select {
 
 option {
     color: #490f63;
+}
+
+@media screen and (min-width: 300px) and (max-width: 600px) {
+    
+    header h1 {
+        letter-spacing: 0.4rem;
+    }
+
+    form {
+        padding: 0.2rem;
+    }
+
+    form input {
+        width: 40%;
+    }
 }

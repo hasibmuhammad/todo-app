@@ -42,7 +42,7 @@ const addTodo = ( e ) => {
 
     // Append Child to the Parent
     todoList.appendChild(todoDiv);
-
+    
     // Clear the todo input
     todoInput.value = "";
 }
