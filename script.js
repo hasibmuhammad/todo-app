@@ -26,7 +26,7 @@ const addTodo = ( e ) => {
     todoDiv.appendChild(newTodo);
 
     // Add to Localstorage
-    addtoLocalStorage(todoInput.value);
+    // addtoLocalStorage(todoInput.value, newTodo);
 
     // Completed CheckMark
     const completedButton = document.createElement('button');
@@ -45,6 +45,8 @@ const addTodo = ( e ) => {
     
     // Clear the todo input
     todoInput.value = "";
+
+    updateLocalStorage();
 }
 
 const deleteAndCheck = ( e ) => {
@@ -70,11 +72,12 @@ const deleteAndCheck = ( e ) => {
     if ( item.classList[0] === 'complete-button' ) {
         const todo = item.parentElement;
         todo.classList.toggle('done');
+
+        updateLocalStorage();
     }
 }
 
 const filterTodo = ( e ) => {
-    console.log(e.target.value);
     const todos = todoList.childNodes;
     todos.forEach( todo => {
         switch (e.target.value) {
@@ -110,16 +113,35 @@ const hasItemOnLocalStorage = token => {
     return items;
 }
 
-const addtoLocalStorage = todo => {
+const addtoLocalStorage = (todo, newTodo) => {
     const todos = hasItemOnLocalStorage('todos');
     if( !todos.includes(todo) ) {
-        todos.push( todo );
+        todos.push({
+            text: todo,
+            done: newTodo.parentElement.classList.contains('done')
+        });
+        localStorage.setItem('todos', JSON.stringify(todos));
     }
-    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+const updateLocalStorage = () => {
+    // const doneItems = hasItemOnLocalStorage('done');
+    const todosEl = document.querySelectorAll('.todo');
+
+    const todos = [];
+
+    todosEl.forEach(todoEl => {
+        todos.push({
+            text: todoEl.childNodes[0].innerText,
+            done: todoEl.classList.contains('done')
+        })
+    });
+
+    localStorage.setItem( 'todoList', JSON.stringify( todos ) );
 }
 
 const getItemsfromLocalStorage = () => {
-    const todos = hasItemOnLocalStorage('todos');
+    const todos = hasItemOnLocalStorage('todoList');
     todos.forEach(todo => {
         // Todo Div
         const todoDiv = document.createElement('div');
@@ -127,7 +149,7 @@ const getItemsfromLocalStorage = () => {
         
         // Todo LI Item
         const newTodo = document.createElement('li');
-        newTodo.innerText = todo;
+        newTodo.innerText = todo.text;
         newTodo.classList.add('todo-item');
         todoDiv.appendChild(newTodo);
 
@@ -143,18 +165,26 @@ const getItemsfromLocalStorage = () => {
         trashButton.classList.add('trash-button');
         todoDiv.appendChild(trashButton);
 
+        if( todo.done ) {
+            todoDiv.classList.add('done')
+        }
+
         // Append Child to the Parent
         todoList.appendChild(todoDiv);
     });
 }
 
 const deleteItemFromLocalStorage = todo => {
-    const todos = hasItemOnLocalStorage('todos');
+    const todos = hasItemOnLocalStorage('todoList');
     const clickedItem = todo.childNodes[0].innerText;
-    const index = todos.indexOf(clickedItem);
-    todos.splice(index, 1);
+    
+    // Get the index from an array of object - depending on properties
+    let index = todos.map( todo => todo.text ).indexOf(clickedItem);
 
-    localStorage.setItem('todos', JSON.stringify(todos));
+    todos.splice(index, 1);
+    
+    localStorage.setItem('todoList', JSON.stringify(todos));
+
 }
 
 // Event Listeners
